@@ -1,0 +1,39 @@
+
+name: Generate and push Docker image
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      NAME_DB: jdbc:h2:file:./test
+      USERNAME_DB: user2
+      PASSWORD_DB: passw0rd2
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Code Build
+        run: mvn clean install -DskipTests -Dspotbugs.skip=true
+
+      - name: Unit Tests
+        run: mvn test
+
+      - name: Static code analysis
+        run: mvn spotbugs:check
+
+      - name: Code Coverage
+        run: echo "Ejecutar pruebas de cobertura de codigo"
+
