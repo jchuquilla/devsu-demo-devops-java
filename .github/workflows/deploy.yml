@@ -25,15 +25,21 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Code Build
-        run: mvn clean install -DskipTests -Dspotbugs.skip=true
-
-      - name: Unit Tests
-        run: mvn test
-
       - name: Static code analysis
         run: mvn spotbugs:check
 
-      - name: Code Coverage
-        run: echo "Ejecutar pruebas de cobertura de codigo"
+      - name: Unit Tests and Generate coverage
+        run: mvn clean verify
 
+      - name: JaCoCo Coverage Report
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        with:
+          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: '80'
+          update-comment: 'true'
+          title: 'Reporte cobertura de código'
+
+      - name: Code Build
+        run: mvn clean install -DskipTests -Dspotbugs.skip=true
