@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      NAME_DB: jdbc:h2:file:./test
-      USERNAME_DB: user2
-      PASSWORD_DB: passw0rd2
+      NAME_DB: ${{secrets.NAME_DB}}
+      USERNAME_DB: ${{secrets.USERNAME_DB}}
+      PASSWORD_DB: ${{secrets.PASSWORD_DB}}
 
     steps:
       - name: Clone repository
@@ -29,7 +29,7 @@ jobs:
         run: mvn spotbugs:check
 
       - name: Unit Tests and Generate coverage
-        run: mvn clean verify
+        run: mvn clean verify -Dspotbugs.skip=true
 
       - name: Upload JaCoCo Report
         if: always()
