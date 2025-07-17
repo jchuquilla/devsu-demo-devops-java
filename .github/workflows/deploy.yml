@@ -30,39 +30,25 @@ jobs:
 
       - name: Unit Tests and Generate coverage
         run: mvn clean verify
-        continue-on-error: true
-
-      - name: JaCoCo Coverage Report
-        id: jacoco
-        uses: madrapps/jacoco-report@v1.7.2
-        with:
-          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: '70'
-          update-comment: 'true'
-          title: 'Reporte cobertura de código'
 
       - name: Upload JaCoCo Report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: 'jacoco-report'
           path: target/site/jacoco
 
       - name: Code Build
-        if: ${{ success() }}
         run: mvn clean install -DskipTests -Dspotbugs.skip=true
 
       - name: Generate Docker image
-        if: ${{success()}}
         run: docker build -t ${{secrets.DOCKER_USERNAME}}/demo-app:${{github.sha}} .
 
       - name: Docker login
-        if: ${{success()}}
         uses: docker/login-action@v3
         with:
           username: ${{secrets.DOCKER_USERNAME}}
           password: ${{secrets.DOCKER_PASSWORD}}
 
       - name: Push Docker Image
-        if: ${{success()}}
         run: docker push ${{secrets.DOCKER_USERNAME}}/demo-app:${{github.sha}}
