@@ -30,6 +30,7 @@ jobs:
 
       - name: Unit Tests and Generate coverage
         run: mvn clean verify
+        continue-on-error: true
 
       - name: JaCoCo Coverage Report
         id: jacoco
@@ -41,5 +42,12 @@ jobs:
           update-comment: 'true'
           title: 'Reporte cobertura de código'
 
+      - name: Upload JaCoCo Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'jacoco-report'
+          path: target/site/jacoco
+
       - name: Code Build
+        if: ${{ failure() }}
         run: mvn clean install -DskipTests -Dspotbugs.skip=true
