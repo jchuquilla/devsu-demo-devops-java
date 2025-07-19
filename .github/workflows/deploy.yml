@@ -74,3 +74,30 @@ jobs:
 
       - name: Start Minikube
         run: minikube start --driver=docker
+
+      - name: Create ConfigMap
+        run: kubectl apply -f k8s/config-map.yaml
+
+      - name: Create Secrets
+        run: kubectl apply -f k8s/secrets.yaml
+
+      - name: Create Deployment
+        run: kubectl apply -f k8s/deployment.yaml
+
+      - name: Waiting for pods ready
+        run: |
+          kubectl wait --for=condition=ready pod \
+          --selector=app=demo-app \
+          --timeout=60s
+
+      - name: Create Service
+        run: kubectl apply -f k8s/service-demo-app.yaml
+
+      - name: Get Service URL
+        run: echo "SERVICE_URL=$(minikube service nombre-del-service --url)" >> $GITHUB_ENV
+
+      - name: Verify endpoint users
+        run: |
+          echo "Verificando que endpoint users responda en $SERVICE_URL"
+          curl -f $SERVICE_URL || (echo "Service no respondió" && exit 1)
+
