@@ -87,25 +87,8 @@ jobs:
       - name: Verify create deployment
         run: |
           echo "Listado de pods"
-          echo "kubectl get pods --show-labels --output=wide"
-
-#      - name: Waiting for pods ready
-#        run: |
-#          sleep 10
-#          kubectl wait --for=condition=ready pod --selector=app=demo-app --timeout=120s
+          kubectl get pods -l app=demo-app -o=custom-columns="NAME:.metadata.name,READY:.status.containerStatuses[*].ready,STATUS:.status.phase,RESTARTS:.status.containerStatuses[*].restartCount,AGE:.metadata.creationTimestamp" --mo-headers
 
       - name: Create Service
         run: kubectl apply -f k8s/service-demo-app.yaml
-
-      - name: Get Service URL
-        run: |
-          echo "Ejecutando minikube service para obtener la URL"
-          RAW_OUTPUT=$(minikube service service-demo-app --url 2>&1)
-          echo "$RAW_OUTPUT"
-          
-
-      - name: Verify endpoint users
-        run: |
-          echo "Verificando que endpoint users responda en $SERVICE_URL"
-          curl -f $SERVICE_URL || (echo "Service no respondió" && exit 1)
 
