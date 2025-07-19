@@ -124,10 +124,14 @@ jobs:
         run: kubectl get pods -n default -o wide
 
       - name: Open tunnel for ingress
-        run: echo "minikube tunnel"
-
-      - name: Waiting for demoapp ready
         run: |
+          minikube tunnel
           for i in {1..10}; do
             curl -sSf http://demoapp.local/api/users && break || sleep 10
           done
+
+#      - name: Waiting for demoapp ready
+#        run: |
+#          for i in {1..10}; do
+#            curl -sSf http://demoapp.local/api/users && break || sleep 10
+#          done
