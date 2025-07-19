@@ -112,6 +112,6 @@ jobs:
 
       - name: Waiting for demoapp ready
         run: |
-          for i in {1..10} do
+          for i in {1..10}; do
             curl -sSf http://demoapp.local/api/users && break || sleep 3
           done
