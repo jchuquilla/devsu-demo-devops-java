@@ -107,11 +107,14 @@ jobs:
       - name: Add demoapp.local to /etc/hosts
         run: echo "127.0.0.1 demoapp.local" | sudo tee -a /etc/hosts
 
+      - name: Status Pods demo-app
+        run: kubectl get pods -n default -o wide
+
       - name: Open tunnel for ingress
         run: echo "minikube tunnel"
 
       - name: Waiting for demoapp ready
         run: |
           for i in {1..10}; do
-            curl -sSf http://demoapp.local/api/users && break || sleep 3
+            curl -sSf http://demoapp.local/api/users && break || sleep 10
           done
