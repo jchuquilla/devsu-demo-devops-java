@@ -84,14 +84,23 @@ jobs:
       - name: Create Deployment
         run: kubectl apply -f k8s/deployment.yaml
 
-      - name: Verify create deployment
-        run: |
-          echo "Listado de pods"
-          kubectl get pods -l app=demo-app -o=custom-columns="NAME:.metadata.name,READY:.status.containerStatuses[*].ready,STATUS:.status.phase,RESTARTS:.status.containerStatuses[*].restartCount,AGE:.metadata.creationTimestamp" --no-headers | tee /tmp/pods_output.txt
-          while IFS= read -r line; do
-            echo "$line"
-          done < /tmp/pods_output.txt
-
       - name: Create Service
         run: kubectl apply -f k8s/service-demo-app.yaml
 
+      - name: Enable Nginx Ingress
+        run: minikube addons enable ingress
+
+      - name: Create Ingress
+        run: kubectl apply -f k8s/ingress-demo-app.yaml
+
+      - name: Add demoapp.local to /etc/hosts
+        run: echo "127.0.0.1 demoapp.local" | sudo tee -a /etc/hosts
+
+      - name: Open tunnel for ingress
+        run: echo "minikube tunnel"
+
+      - name: Waiting for demoapp ready
+        run: |
+          for i in {1..10} do
+            curl -sSf http://demoapp.local/api/users && break || sleep 3
+          done
