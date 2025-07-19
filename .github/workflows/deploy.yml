@@ -93,6 +93,14 @@ jobs:
       - name: Status ingress
         run: kubectl get pods -n ingress-nginx -o wide
 
+      - name: Wait for Ingress Controller is ready
+        run: |
+          kubectl wait --namespace ingress-nginx \
+            --for=condition=Ready \
+            pod \
+            --selector=app.kubernetes.io/component=controller \
+            --timeout=120s
+
       - name: Create Ingress
         run: kubectl apply -f k8s/ingress-demo-app.yaml
 
