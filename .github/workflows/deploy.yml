@@ -90,6 +90,9 @@ jobs:
       - name: Enable Nginx Ingress
         run: minikube addons enable ingress
 
+      - name: Status ingress
+        run: kubectl get pods -n ingress-nginx -o wide
+
       - name: Create Ingress
         run: kubectl apply -f k8s/ingress-demo-app.yaml
 
