@@ -87,7 +87,7 @@ jobs:
       - name: Verify create deployment
         run: |
           echo "Listado de pods"
-          kubectl get pods -l app=demo-app -o=custom-columns="NAME:.metadata.name,READY:.status.containerStatuses[*].ready,STATUS:.status.phase,RESTARTS:.status.containerStatuses[*].restartCount,AGE:.metadata.creationTimestamp" --mo-headers
+          kubectl get pods -l app=demo-app -o=custom-columns="NAME:.metadata.name,READY:.status.containerStatuses[*].ready,STATUS:.status.phase,RESTARTS:.status.containerStatuses[*].restartCount,AGE:.metadata.creationTimestamp" --no-headers
 
       - name: Create Service
         run: kubectl apply -f k8s/service-demo-app.yaml
