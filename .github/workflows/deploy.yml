@@ -123,11 +123,19 @@ jobs:
       - name: Status Pods demo-app
         run: kubectl get pods -n default -o wide
 
-      - name: Open tunnel for ingress
+      - name: Describe service demo-app
+        run: kubectl describe svc -n default service-demo-app
+
+      - name: Describe Ingress demo-app
+        run: kubectl describe ingress -n default demo-app-ingress
+
+      - name: Port-forward Ingress Controller
+        run: kubectl port-forward svc/ingress-nginx-controller 8080:80 -n ingress-nginx
+
+      - name: Test access to Pods through Ingress
         run: |
-          minikube tunnel
           for i in {1..10}; do
-            curl -sSf http://demoapp.local/api/users && break || sleep 10
+            curl -sSf http://demoapp.local:8080/api/users && break || sleep 10
           done
 
 #      - name: Waiting for demoapp ready
