@@ -104,7 +104,9 @@ jobs:
         run: minikube addons enable ingress
 
       - name: Status ingress
-        run: kubectl get pods -n ingress-nginx -o wide
+        run: |
+          kubectl get pods -n ingress-nginx -o wide
+          sleep 10
 
       - name: Wait for Ingress Controller is ready
         run: |
