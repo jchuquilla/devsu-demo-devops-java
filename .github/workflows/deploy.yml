@@ -101,13 +101,8 @@ jobs:
         run: |
           echo "Ejecutando minikube service para obtener la URL"
           RAW_OUTPUT=$(minikube service service-demo-app --url 2>&1)
-          SERVICE_URL=$(echo "$RAW_OUTPUT" | grep -Eo 'http://127\.0\.0\.1:[0-9]+')
-          if [ -z "$SERVICE_URL" ]; then
-            echo "No se pudo extraer la URL del servicio"
-            exit 1
-          fi
-          echo "✅ URL capturada: $SERVICE_URL"
-          echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
+          echo "$RAW_OUTPUT"
+          
 
       - name: Verify endpoint users
         run: |
