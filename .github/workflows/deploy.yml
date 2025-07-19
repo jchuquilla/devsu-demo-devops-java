@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.set_tag.outputs.tag }}
+
 
     env:
       NAME_DB: ${{secrets.NAME_DB}}
@@ -41,8 +44,12 @@ jobs:
       - name: Code Build
         run: mvn clean install -DskipTests -Dspotbugs.skip=true
 
+      - name: Generate TAG
+        id: set_tag
+        run: echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
       - name: Generate Docker image
-        run: docker build -t ${{secrets.DOCKER_USERNAME}}/demo-app:${{github.sha}} .
+        run: docker build -t ${{secrets.DOCKER_USERNAME}}/demo-app:${{ steps.set_tag.outputs.tag }} .
 
       - name: Docker login
         uses: docker/login-action@v3
@@ -51,7 +58,7 @@ jobs:
           password: ${{secrets.DOCKER_PASSWORD}}
 
       - name: Push Docker Image
-        run: docker push ${{secrets.DOCKER_USERNAME}}/demo-app:${{github.sha}}
+        run: docker push ${{secrets.DOCKER_USERNAME}}/demo-app:${{ steps.set_tag.outputs.tag }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -82,7 +89,13 @@ jobs:
         run: kubectl apply -f k8s/secrets.yaml
 
       - name: Create Deployment
-        run: kubectl apply -f k8s/deployment.yaml
+        run: |
+          echo "Usando imagen demoapp:${{ needs.build.outputs.image_tag }}"
+          sed "s|\${TAG}|${{ needs.build.outputs.image_tag }}|g" k8s/deployment.yaml > k8s/deployment-resolved.yaml
+          kubectl apply -f k8s/deployment-resolved.yaml
+
+#      - name: Create Deployment
+#        run: kubectl apply -f k8s/deployment.yaml
 
       - name: Create Service
         run: kubectl apply -f k8s/service-demo-app.yaml

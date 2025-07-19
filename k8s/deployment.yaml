@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: demo-app-container
-          image: jchuquilla/demo-app:${{github.sha}}
+          image: jchuquilla/demo-app:${TAG}
           ports:
             - containerPort: 8090
           envFrom:
