@@ -85,14 +85,14 @@ jobs:
         run: kubectl apply -f k8s/deployment.yaml
 
       - name: Verify create deployment
-        run: kubectl get pods --show-labels
+        run: |
+          echo "Listado de pods"
+          kubectl get pods --show-labels
 
       - name: Waiting for pods ready
         run: |
           sleep 10
-          kubectl wait --for=condition=ready pod \
-          --selector=app=demo-app \
-          --timeout=60s
+          kubectl wait --for=condition=ready pod --selector=app=demo-app --timeout=120s
 
       - name: Create Service
         run: kubectl apply -f k8s/service-demo-app.yaml
