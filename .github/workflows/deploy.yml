@@ -94,8 +94,8 @@ jobs:
           sed "s|\${TAG}|${{ needs.build.outputs.image_tag }}|g" k8s/deployment.yaml > k8s/deployment-resolved.yaml
           kubectl apply -f k8s/deployment-resolved.yaml
 
-#      - name: Create Deployment
-#        run: kubectl apply -f k8s/deployment.yaml
+      - name: Waiting for pods are ready
+        run: kubectl wait --for=condition=ready pod --selector=app=demo-app --timeout=120s
 
       - name: Create Service
         run: kubectl apply -f k8s/service-demo-app.yaml
@@ -130,13 +130,10 @@ jobs:
         run: kubectl describe ingress -n default demo-app-ingress
 
       - name: Port-forward Ingress Controller
-        run: kubectl port-forward svc/ingress-nginx-controller 8080:80 -n ingress-nginx
+        run: kubectl port-forward svc/ingress-nginx-controller 8080:80 -n ingress-nginx &
 
       - name: Test access to Pods through Ingress
-        run: |
-          for i in {1..10}; do
-            curl -sSf http://demoapp.local:8080/api/users && break || sleep 10
-          done
+        run: curl http://demoapp.local:8080/api/users
 
 #      - name: Waiting for demoapp ready
 #        run: |
