@@ -93,6 +93,7 @@ jobs:
           echo "Usando imagen demoapp:${{ needs.build.outputs.image_tag }}"
           sed "s|\${TAG}|${{ needs.build.outputs.image_tag }}|g" k8s/deployment.yaml > k8s/deployment-resolved.yaml
           kubectl apply -f k8s/deployment-resolved.yaml
+          sleep 10
 
       - name: Waiting for pods are ready
         run: kubectl wait --for=condition=ready pod --selector=app=demo-app --timeout=120s
@@ -104,9 +105,7 @@ jobs:
         run: minikube addons enable ingress
 
       - name: Status ingress
-        run: |
-          kubectl get pods -n ingress-nginx -o wide
-          sleep 10
+        run: kubectl get pods -n ingress-nginx -o wide
 
       - name: Wait for Ingress Controller is ready
         run: |
