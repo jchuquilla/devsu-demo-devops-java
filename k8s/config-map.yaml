@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-demo-app
+data:
+  PORT: "8090"
+  NAME_DB: "jdbc:h2:file:./test"

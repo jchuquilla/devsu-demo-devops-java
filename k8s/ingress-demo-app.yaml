@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-app-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: demoapp.local
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: service-demo-app
+                port:
+                  number: 8090
