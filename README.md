@@ -137,6 +137,31 @@ If the response is unsuccessful, we will receive status 400 and the following me
 }
 ```
 
+## Diagrama de la solución
+![img.png](img.png)
+Tenemos el diagrama de la solución, utilizando los recursos 
+de kubernetes, Ingress, Service, Deployment(Pods)
+
+## Resultado ejecución pipeline
+El pipeline se inicia cuando se sube algún cambio a la rama
+master (push) obteniendo como resultado el siguiente
+pipeline como se indica en la siguiente figura
+![img_1.png](img_1.png)
+
+En el job build tenemos las validaciones de pruebas unitarias
+análisis estático de código, la generación de la imagen
+docker y su correcta publicación en DockerHub
+
+En el job deploy tenemos el despliegue de la imagen
+docker generada en el build utilizando minikube
+y además se realiza dentro del job en el paso TEST ACCESS
+TO PODS THROUGH INGRESS que la app responda al
+endpoint /api/users teniendo una respuesta exitosa.
+![img_3.png](img_3.png)
+
+Los archivos de despliegue en kubernetes se encuentran
+en la carpeta /k8s del proyecto.
+
 ## License
 
 Copyright © 2023 Devsu. All rights reserved.
